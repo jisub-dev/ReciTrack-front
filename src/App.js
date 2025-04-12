@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './App.css';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -17,16 +18,24 @@ function App() {
     }
     try {
       setLoading(true);
+
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      // 백엔드로 업로드
-      const response = await axios.post('http://localhost:8080/api/receipts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      setOcrResult(response.data.ocrText || 'No OCR result');
+      // backend의 API 주소
+      // 백엔드에서 @RequestMapping("/api/receipts") + @PostMapping => POST /api/receipts
+      const response = await axios.post(
+          'http://localhost:8080/api/receipts',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+      );
+
+      // 서버에서 반환한 Receipt 객체를 받아서 OCR 결과를 표시
+      setOcrResult(response.data.ocrText || 'No OCR result available');
     } catch (error) {
       console.error(error);
       alert('Error uploading file or processing OCR.');
